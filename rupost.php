@@ -1,0 +1,61 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+	<head>
+		<title>Отслеживание почтовых отправлений </title>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	</head>	
+<body>
+<?php 
+if ((empty($_GET['pid'])) || ((!preg_match('|^\d{14}$|',$_GET['pid'])) && (!preg_match('|^[A-Z]{2}\d{7}[A-Z]{2}$|',$_GET['pid']))))
+	die("<center><h3>Укажите корректный pid почтового отправления!</h3></center></body></html>");
+include('simple_html_dom.php');
+$param=array(); 
+//download ruspost for parsing params 
+$curl_opt=array(CURLOPT_URL=>'http://www.russianpost.ru/resp_engine.aspx?Path=rp/servise/ru/home/postuslug/trackingpo',
+				CURLOPT_RETURNTRANSFER=>true,
+				CURLOPT_HEADER=>0,
+				CURLOPT_FOLLOWLOCATION=>1,
+				CURLOPT_CONNECTTIMEOUT=>30,
+				CURLOPT_VERBOSE=>30,
+				CURLOPT_USERAGENT=>'Mozilla/5.0 (Windows; U; Windows NT 5.1; ru; rv:1.8.1)');
+$ch=curl_init();
+$html = new simple_html_dom();
+curl_setopt_array($ch,$curl_opt);
+$html_str=curl_exec($ch);
+$html=str_get_html($html_str);
+//$html = file_get_html('./ruspost/ruspost.html');		
+$form = $html->find("form",0);  
+foreach ($form->children() as $input)   	  
+    if ($input->type=='hidden') $param[]=$input->name."=".$input->value; 
+$param[]='search1=';
+$param[]='BarCode='.$_GET['pid'];
+$param[]='searchsign=1';
+$param[]='entryBarCode=';
+//query result
+curl_setopt($ch, CURLOPT_POST, 1);
+curl_setopt($ch, CURLOPT_POSTFIELDS,implode('&',$param));
+curl_setopt($ch, CURLOPT_REFERER, 'http://www.russianpost.ru/resp_engine.aspx?Path=rp/servise/ru/home/postuslug/trackingpo');		
+$html_str = curl_exec($ch);
+curl_close($ch); 
+$html = str_get_html($html_str);
+if (($table1 = $html->find("#PRINTBODY table",2)) && ($table2 = $html->find("#PRINTBODY table",3)))
+{
+	$table1->align="center";
+	foreach ($table1->children() as $tr)
+	 foreach ($tr->children() as $th)
+	  $th->style="border-bottom:1px solid #ccc;";
+	echo $table1."\n";
+	$table2->bgcolor='white';
+	$table2->align='center';
+	foreach ($table2->children() as $tr)
+	 $tr->style=($tr->tag=="tbody")?"background-color:#ddd":"background-color:#ccc";
+	$table2=preg_replace("|<a href=[^>]*?>|","",$table2);
+	$table2=preg_replace("|class=\"[^\"]*?\"|","",$table2);
+	echo $table2."\n";
+}
+else 
+	echo "<center><h3><font color=red>К сожалению, информация о почтовом отправлении с номером {$_GET['pid']} не найдена.</font></h3></center>";	
+$html->clear;  
+?>
+</body>
+</html>
