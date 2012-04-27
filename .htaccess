@@ -1,2 +1,4 @@
 RewriteEngine on
+AddDefaultCharset utf-8  
+
 RewriteRule ^([0-9]+)$  rupost.php?pid=$1
