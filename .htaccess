@@ -1,0 +1,2 @@
+RewriteEngine on
+RewriteRule ^([0-9]+)$  rupost.php?pid=$1
