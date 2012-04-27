@@ -9,6 +9,10 @@ rupost
 * точное соответствие странице трекинга Почты России
 * простой и легкий дизайн вывода
 
+# Источник информации:
+<a href="http://www.russianpost.ru/resp_engine.aspx?Path=rp/servise/ru/home/postuslug/trackingpo" target="_blank">
+Почта России</a>
+
 # Тестирование
 
 * rupost.php?pid=14398748001940
