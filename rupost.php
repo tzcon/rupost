@@ -10,8 +10,9 @@ if ((empty($_GET['pid'])) || ((!preg_match('|^\d{14}$|',$_GET['pid'])) && (!preg
 	die("<center><h3>Укажите корректный pid почтового отправления!</h3></center></body></html>");
 include('simple_html_dom.php');
 $param=array(); 
+$url='http://www.russianpost.ru/resp_engine.aspx?Path=rp/servise/ru/home/postuslug/trackingpo';
 //download ruspost for parsing params 
-$curl_opt=array(CURLOPT_URL=>'http://www.russianpost.ru/resp_engine.aspx?Path=rp/servise/ru/home/postuslug/trackingpo',
+$curl_opt=array(CURLOPT_URL=>$url,
 				CURLOPT_RETURNTRANSFER=>true,
 				CURLOPT_HEADER=>0,
 				CURLOPT_FOLLOWLOCATION=>1,
@@ -34,7 +35,7 @@ $param[]='entryBarCode=';
 //query result
 curl_setopt($ch, CURLOPT_POST, 1);
 curl_setopt($ch, CURLOPT_POSTFIELDS,implode('&',$param));
-curl_setopt($ch, CURLOPT_REFERER, 'http://www.russianpost.ru/resp_engine.aspx?Path=rp/servise/ru/home/postuslug/trackingpo');		
+curl_setopt($ch, CURLOPT_REFERER, $url);		
 $html_str = curl_exec($ch);
 curl_close($ch); 
 $html = str_get_html($html_str);
@@ -43,7 +44,8 @@ if (($table1 = $html->find("#PRINTBODY table",2)) && ($table2 = $html->find("#PR
 	$table1->align="center";
 	foreach ($table1->children() as $tr)
 	 foreach ($tr->children() as $th)
-	  $th->style="border-bottom:1px solid #ccc;";
+	  $th->style="border-bottom:1px solid #ccc;";	  
+	$table1->innertext='<tr valign="top"><th align="left"  style="border-bottom:1px solid #ccc;">Источник информации:</th><td  style="border-bottom:1px solid #ccc;"><a href="'.$url.'" target="_blank">Почта России</a></td></tr>'.$table1->innertext;   
 	echo $table1."\n";
 	$table2->bgcolor='white';
 	$table2->align='center';
