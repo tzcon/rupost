@@ -1,10 +1,15 @@
 ﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 	<head>
-		<title>Отслеживание почтовых отправлений </title>
+		<title>Отслеживание ценных писем Почты России </title>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	</head>	
 <body>
+<center>
+<h2>Отслеживание ценных писем Почты России</h2>
+<h4>О проекте: <a href="http://tzcon.github.com/rupost/" target="_blank">tzcon.github.com/rupost/</a></h4>
+</center>
+<hr>
 <?php 
 if ((empty($_GET['pid'])) || ((!preg_match('|^\d{14}$|',$_GET['pid'])) && (!preg_match('|^[A-Z]{2}\d{7}[A-Z]{2}$|',$_GET['pid']))))
 	die("<center><h3>Укажите корректный pid почтового отправления!</h3></center></body></html>");
@@ -61,13 +66,9 @@ else
 	echo"<center><h4><font color=red>Не удалось получить информацию о почтовом отправлении <b>{$_GET['pid']}</b>, возможно изменился формат вывода данных.</font><br>
 	Источник информации:<a href=\"'.$url.'\" target=\"_blank\">Почта России</a></h4></center>";	
 $html->clear;  
+function timeout_error()
+{global $url;
+ die("<center><h4><font color=red>Сайт <a href=\"'.$url.'\" target=\"_blank\">Почты России</a> не ответил вовремя. Попробуйте повторить запрос позднее.</font></h4></center></body></html>");}
 ?>
 </body>
 </html>
-<?php
-function timeout_error()
-{
-  global $url;
-  die("<center><h4><font color=red>Сайт <a href=\"'.$url.'\" target=\"_blank\">Почты России</a> не ответил вовремя. Попробуйте повторить запрос позднее.</font></h4></center></body></html>");
- }
-?>
